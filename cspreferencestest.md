@@ -1,0 +1,10 @@
+- __IDEA__ add support for attatchments [cspreferences/CSPListController.m](cspreferences/CSPListController.m) _:457_
+- __IDEA__ see if i can subclass 3DTouch rather than implementing it here [cspreferences/CSPListController.m](cspreferences/CSPListController.m) _:132_
+- __TODO__ add initializer that take parent as initializer parameter [cspreferences/CSPListController.m](cspreferences/CSPListController.m) _:180_
+- __TODO__ create public methods [cspreferences/CSPListController.m](cspreferences/CSPListController.m) _:280_
+- __TODO__ define headers within the project rather than using include directory [cspreferences/CSPCommon.h](cspreferences/CSPCommon.h) _:12_
+- __TODO__ document this [cspreferences/CSPListController.m](cspreferences/CSPListController.m) _:155_
+- __TODO__ move to class and subclass [cspreferences/CSPListController.m](cspreferences/CSPListController.m) _:392_
+- __TODO__ move to Utility Class and subclass [cspreferences/CSPListController.m](cspreferences/CSPListController.m) _:381_
+- __TODO__ seporate public and private [cspreferences/CSPCommon.h](cspreferences/CSPCommon.h) _:11_
+- __TODO__ verify this works [cspreferences/CSPListController.m](cspreferences/CSPListController.m) _:363_
