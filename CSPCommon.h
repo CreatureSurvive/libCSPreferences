@@ -5,21 +5,23 @@
  * @Project: motuumLS
  * @Filename: CSPCommon.h
  * @Last modified by:   creaturesurvive
- * @Last modified time: 26-07-2017 6:09:47
+ * @Last modified time: 11-08-2017 3:13:37
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 //TODO seporate public and private
 //TODO define headers within the project rather than using include directory
- #import <Preferences/PSListController.h>
- #import <Preferences/PSSpecifier.h>
- #import <Preferences/PSControlTableCell.h>
- #import <Preferences/PSSwitchTableCell.h>
- #import <Preferences/PSListItemsController.h>
+#import <Preferences/PSListController.h>
+#import <Preferences/PSSpecifier.h>
+#import <Preferences/PSControlTableCell.h>
+#import <Preferences/PSSwitchTableCell.h>
+#import <Preferences/PSListItemsController.h>
 
- #import <SafariServices/SafariServices.h>
+#import "UIColor+ColorFromHex.h"
 
- #import "CSListItemsController.h"
- #import "CSListFontsController.h"
+#import <SafariServices/SafariServices.h>
+
+#import "CSListItemsController.h"
+#import "CSListFontsController.h"
 
 #import "CSPListController.h"
 #import "CSPBrowserPreviewController.h"

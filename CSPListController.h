@@ -5,7 +5,7 @@
  * @Project: motuumLS
  * @Filename: CSPListController.h
  * @Last modified by:   creaturesurvive
- * @Last modified time: 08-07-2017 5:32:42
+ * @Last modified time: 11-08-2017 10:01:20
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
@@ -13,10 +13,11 @@
 #include <spawn.h>
 #include "CSPCommon.h"
 #import <MessageUI/MFMailComposeViewController.h>
+#import "CSPMailComposeManager.h"
 
 @interface CSPListController : PSListController <UITableViewDelegate, UIViewControllerPreviewingDelegate, MFMailComposeViewControllerDelegate>
 @property (nonatomic, strong) id previewingContext;
-- (id)initWithPlistName:(NSString *)plist;
+- (id)initWithPlistName:(NSString *)plist inBundle:(NSBundle *)bundle;
 - (void)refreshCellWithSpecifier:(PSSpecifier *)specifier;
 - (void)openURLInBrowser:(NSString *)url;
 @end

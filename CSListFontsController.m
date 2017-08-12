@@ -5,39 +5,43 @@
  * @Project: motuumLS
  * @Filename: CSListFontsController.m
  * @Last modified by:   creaturesurvive
- * @Last modified time: 08-07-2017 5:38:19
+ * @Last modified time: 11-08-2017 8:03:10
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
 #import "CSListFontsController.h"
 
-@implementation CSListFontsController
+@implementation CSListFontsController {
+    UIColor *_tintColor;
+}
 
 
 // set the tint colors before the view appears
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+- (void)viewDidLoad {
+    [super viewDidLoad];
     [self setTint];
 }
 
 // sets the tint colors for the view
 - (void)setTint {
+    _tintColor = [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"] ? : @"FF0000"];
+
     // Color the navbar
-    self.navigationController.navigationController.navigationBar.tintColor = _accentTintColor;
-    self.navigationController.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : _accentTintColor};
+    self.navigationController.navigationController.navigationBar.tintColor = _tintColor;
+    self.navigationController.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : _tintColor};
 
     // set tableView tint color
-    [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = _accentTintColor;
+    [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = _tintColor;
 
     // set the view tint
-    self.view.tintColor = _accentTintColor;
+    self.view.tintColor = _tintColor;
 }
 
 // Adjust labels when loading the cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = (UITableViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
     // [cell.textLabel setAdjustsFontSizeToFitWidth:YES]; 
-    cell.textLabel.textColor = _accentTintColor;
+    cell.textLabel.textColor = _tintColor;
     cell.textLabel.font = [UIFont fontWithName:cell.textLabel.text size:20];
     return cell;
 }

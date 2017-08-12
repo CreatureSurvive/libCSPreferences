@@ -4,7 +4,7 @@
  * @Email:  dbuehre@me.com
  * @Filename: CSPDeveloperCell.m
  * @Last modified by:   creaturesurvive
- * @Last modified time: 26-07-2017 1:22:57
+ * @Last modified time: 11-08-2017 3:43:27
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 #import "CSPDeveloperCell.h"
@@ -25,6 +25,7 @@ NSString *const CSPDevURLKey = @"url";
     NSString *_primaryString;
     NSString *_subString1;
     NSString *_subString2;
+    UIColor *_tintColor;
 }
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier specifier:(PSSpecifier *)specifier {
@@ -35,6 +36,7 @@ NSString *const CSPDevURLKey = @"url";
         _subString2 = specifier.properties[CSPDevSubtitleKey];
         _username = specifier.properties[@"username"];
         _urlType = [specifier.properties[@"provider"] intValue];
+        _tintColor = [UIColor colorFromHexString:[specifier propertyForKey:@"tintColor"] ? : @"FF0000"];
         self.specifier = specifier;
 
         [self setupForType];
@@ -70,8 +72,8 @@ NSString *const CSPDevURLKey = @"url";
     [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:17.0] range:[content rangeOfString:_primaryString]];
     [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.0] range:[content rangeOfString:_subString1]];
     [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.0] range:[content rangeOfString:_subString2]];
-    [attributedString addAttribute:NSForegroundColorAttributeName value:_accentTintColor range:[content rangeOfString:_primaryString]];
-    [attributedString addAttribute:NSForegroundColorAttributeName value:[_accentTintColor colorWithAlphaComponent:0.75] range:NSMakeRange(_primaryString.length, content.length - _primaryString.length)];
+    [attributedString addAttribute:NSForegroundColorAttributeName value:_tintColor range:[content rangeOfString:_primaryString]];
+    [attributedString addAttribute:NSForegroundColorAttributeName value:[_tintColor colorWithAlphaComponent:0.75] range:NSMakeRange(_primaryString.length, content.length - _primaryString.length)];
 
     _label = [UILabel new];
     [_label setNumberOfLines:0];

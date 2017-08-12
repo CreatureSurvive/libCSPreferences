@@ -5,7 +5,7 @@
  * @Project: motuumLS
  * @Filename: CSPListController.m
  * @Last modified by:   creaturesurvive
- * @Last modified time: 26-07-2017 7:14:40
+ * @Last modified time: 12-08-2017 9:13:15
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
@@ -23,6 +23,7 @@
     NSCache *_avatarCache;
     NSString *_cacheDirectoryPath;
     NSBundle *_bundle;
+    UIColor *_tintColor;
 }
 
 #pragma mark Initialize
@@ -35,11 +36,11 @@
     return self;
 }
 
-- (id)initWithPlistName:(NSString *)plist {
+- (id)initWithPlistName:(NSString *)plist inBundle:(NSBundle *)bundle {
     if ((self = [super init]) != nil) {
         [self setup];
-        CSInfo(@"CSP%@", plist);
-        // _bundle = [NSBundle bundleWithPath:[NSString stringWithFormat:@"/Library/PreferenceBundles/%@.bundle", [_specifier propertyForKey:PSBundlePathKey]]];
+        //[NSBundle bundleWithPath:[NSString stringWithFormat:@"/Library/PreferenceBundles/%@.bundle", bundleName]];
+        _bundle = bundle;
         _specifiers = [self loadSpecifiersFromPlistName:plist target:self bundle:_bundle];
     }
 
@@ -47,9 +48,10 @@
 }
 
 - (void)setup {
-    _bundle = [NSBundle bundleWithPath:@"/Library/PreferenceBundles/prefsTest.bundle"];
+    _bundle = [self bundle];
     _settings = [NSMutableDictionary dictionaryWithContentsOfFile:[self preferencePath]] ? : [NSMutableDictionary dictionary];
     _toggleGroups = @[@"enabled", @"enabled1"];
+    _tintColor = [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"] ? : @"FF0000"];
 }
 
 // return the specifiers from .plist
@@ -62,7 +64,6 @@
 }
 
 - (NSString *)preferencePath {
-    CSInfo(@"CSP%@", [NSString stringWithFormat:@"/User/Library/Preferences/%@.plist", _bundle.bundleIdentifier]);
     return [NSString stringWithFormat:@"/User/Library/Preferences/%@.plist", _bundle.bundleIdentifier];
 }
 
@@ -78,8 +79,8 @@
 // tint the view after it loads
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self setupHeader];
     [self setTintEnabled:YES];
+    [self setupHeader];
 }
 
 // remove tint wen leaving the view
@@ -90,20 +91,22 @@
 
 // sets the tint colors for the view
 - (void)setTintEnabled:(BOOL)enabled {
+    _tintColor = [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"] ? : @"FF0000"];
+
     if (enabled) {
         // Color the navbar
-        self.navigationController.navigationController.navigationBar.tintColor = _accentTintColor;
-        self.navigationController.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : _accentTintColor};
+        self.navigationController.navigationController.navigationBar.tintColor = _tintColor;
+        self.navigationController.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : _tintColor};
 
         // set cell control colors
-        [UISwitch appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].onTintColor = _accentTintColor;
-        [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = _accentTintColor;
-        [UITextField appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].textColor = _accentTintColor;
-        [UISegmentedControl appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = _accentTintColor;
-        [self setSegmentedSliderTrackColor:_accentTintColor];
+        [UISwitch appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].onTintColor = _tintColor;
+        [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = _tintColor;
+        [UITextField appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].textColor = _tintColor;
+        [UISegmentedControl appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = _tintColor;
+        [self setSegmentedSliderTrackColor:_tintColor];
 
         // set the view tint
-        self.view.tintColor = _accentTintColor;
+        self.view.tintColor = _tintColor;
     } else {
         // Un-Color the navbar when leaving the view
         self.navigationController.navigationController.navigationBar.tintColor = nil;
@@ -124,7 +127,7 @@
     [headerLabel setNumberOfLines:1];
     [headerLabel setFont:[UIFont systemFontOfSize:36]];
     [headerLabel setBackgroundColor:[UIColor clearColor]];
-    [headerLabel setTextColor:_accentTintColor];
+    [headerLabel setTextColor:_tintColor];
     [headerLabel setTextAlignment:NSTextAlignmentCenter];
     [header addSubview:headerLabel];
     [headerLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -135,7 +138,7 @@
     [subHeaderLabel setNumberOfLines:1];
     [subHeaderLabel setFont:[UIFont systemFontOfSize:17]];
     [subHeaderLabel setBackgroundColor:[UIColor clearColor]];
-    [subHeaderLabel setTextColor:_accentTintColor];
+    [subHeaderLabel setTextColor:_tintColor];
     [subHeaderLabel setTextAlignment:NSTextAlignmentCenter];
     [header addSubview:subHeaderLabel];
     [subHeaderLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -179,7 +182,7 @@
     [previewingContext setSourceRect:[self cachedCellForSpecifier:specifier].frame];
     switch (specifier.cellType) {
         case PSButtonCell: {
-            vc = [[CSPListController alloc] initWithPlistName:[specifier propertyForKey:@"pushPlist"]];
+            vc = [[CSPListController alloc] initWithPlistName:[specifier propertyForKey:@"pushPlist"] inBundle:_bundle];
         } break;
 
         case PSLinkListCell: {
@@ -195,12 +198,10 @@
             if ([specifier propertyForKey:@"url"]) {
                 vc = [[CSPBrowserPreviewController alloc] initWithURL:[specifier propertyForKey:@"url"]];
             } else if ([specifier propertyForKey:@"mailto"]) {
-                MFMailComposeViewController *mailViewController = [self mailComposeControllerForSpecifier:specifier];
+                MFMailComposeViewController *mailViewController = [CSPMailComposeManager mailComposeControllerForSpecifier:specifier delegate:self];
                 return mailViewController;
             }
         } break;
-
-
     }
 
     [vc setParentController:self];
@@ -233,7 +234,7 @@
     UITableViewCell *cell = (UITableViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
     [cell.textLabel setAdjustsFontSizeToFitWidth:YES];
     [cell.detailTextLabel setAdjustsFontSizeToFitWidth:YES];
-    cell.textLabel.textColor = _accentTintColor;
+    cell.textLabel.textColor = _tintColor;
 
     if ([cell isKindOfClass:([CSPDeveloperCell class])]) {
         [self avatarForCell:(CSPDeveloperCell *)cell];
@@ -278,6 +279,12 @@
     // AudioServicesPlaySystemSound(1519);
     [self checkForUpdatesWithSpecifier:specifier animated:YES];
 
+    // if any other specifiers have the same key as the specifier that changed, then we need to update those specifiers aswell as the UI
+    for (PSSpecifier *sameKeySpecifier in [self specifiersForKey:[specifier propertyForKey:PSKeyNameKey]]) {
+        if ([specifier isEqualToSpecifier:sameKeySpecifier]) continue;
+        [self reloadSpecifier:sameKeySpecifier animated:YES];
+    }
+
     NSString *post = [specifier propertyForKey:@"PostNotification"];
     if (post) {
         CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (__bridge CFStringRef)post, NULL, NULL, TRUE);
@@ -308,7 +315,6 @@
             NSPredicate *filter = [self specifierFilterWithOptions:@{ @"keys": @[[specifier propertyForKey:PSKeyNameKey]], @"types": @[@(PSGroupCell)] } excludeOptions:YES];
             [self setSpecifiers:[group filteredArrayUsingPredicate:filter] enabled:[_settings[key] boolValue]];
         }
-
         // if ([[[self groupSpecifierForGroup:group] propertyForKey:PSIsRadioGroupKey] boolValue]) {
         //     // CSAlertLog(@"Finally a radio group");
         //     NSPredicate *filter = [self specifierFilterWithOptions:@{@"types": @[@(PSSwitchCell)] } excludeOptions:NO];
@@ -346,6 +352,17 @@
         return [included containsObject:@([specifier cellType])];
     }];
     return [[self specifiersInGroup:group] filteredArrayUsingPredicate:filter];
+}
+
+// retuns an array of specifiers with the given key
+- (NSArray *)specifiersForKey:(NSString *)key {
+    NSMutableArray *specifiers = [NSMutableArray new];
+    for (PSSpecifier *specifier in _specifiers) {
+        if ([[specifier propertyForKey:PSKeyNameKey] isEqualToString:key]) {
+            [specifiers addObject:specifier];
+        }
+    }
+    return [specifiers copy];
 }
 
 // sets the height for the specifier when enabled/disabled and updates the cell
@@ -409,7 +426,7 @@
 - (SFSafariViewController *)safariBrowserForURL:(NSString *)url {
     SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:url] entersReaderIfAvailable:NO];
     // using this method for coloring because it supports ios 9 as well
-    safari.view.tintColor = _accentTintColor;
+    safari.view.tintColor = _tintColor;
     return safari;
 }
 
@@ -422,13 +439,14 @@
 
 // open controller action
 - (void)pushToView:(PSSpecifier *)sender {
-    _child = [[CSPListController alloc] initWithPlistName:[sender propertyForKey:@"pushPlist"]];
+    _child = [[CSPListController alloc] initWithPlistName:[sender propertyForKey:@"pushPlist"] inBundle:_bundle];
+    [_child setSpecifier:sender];
     [self.navigationController pushViewController:_child animated:YES];
 }
 
 // email action
 - (void)email:(PSSpecifier *)sender {
-    MFMailComposeViewController *mailViewController = [self mailComposeControllerForSpecifier:sender];
+    MFMailComposeViewController *mailViewController = [CSPMailComposeManager mailComposeControllerForSpecifier:sender delegate:self];
     [self presentViewController:mailViewController animated:YES completion:nil];
 }
 
@@ -506,40 +524,6 @@
         _fontNames = [[NSSet setWithArray:names].allObjects sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     }
     return _fontNames;
-}
-
-// IDEA add support for attatchments
-- (MFMailComposeViewController *)mailComposeControllerForSpecifier:(PSSpecifier *)specifier {
-    MFMailComposeViewController *mailViewController = [[MFMailComposeViewController alloc] init];
-    mailViewController.mailComposeDelegate = self;
-
-    NSURLComponents *components = [NSURLComponents componentsWithString:[specifier propertyForKey:@"mailto"]];
-    NSString *toRecipients = components.path;
-
-    for (NSURLQueryItem *param in components.queryItems) {
-        if ([param.name isEqualToString:@"to"]) {
-            toRecipients = [NSString stringWithFormat:@"%@,%@", components.path, param.value];
-        }
-
-        if ([param.name isEqualToString:@"subject"]) {
-            [mailViewController setSubject:param.value];
-        }
-
-        if ([param.name isEqualToString:@"body"]) {
-            [mailViewController setMessageBody:param.value isHTML:NO];
-        }
-
-        if ([param.name isEqualToString:@"cc"]) {
-            [mailViewController setCcRecipients:[param.value componentsSeparatedByString:@","]];
-        }
-
-        if ([param.name isEqualToString:@"bcc"]) {
-            [mailViewController setBccRecipients:[param.value componentsSeparatedByString:@","]];
-        }
-    }
-    [mailViewController setToRecipients:[toRecipients componentsSeparatedByString:@","]];
-
-    return mailViewController;
 }
 
 #pragma mark MFMailComposeViewControllerDelegate
