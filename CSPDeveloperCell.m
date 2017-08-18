@@ -25,7 +25,13 @@ NSString *const CSPDevURLKey = @"url";
     NSString *_primaryString;
     NSString *_subString1;
     NSString *_subString2;
-    UIColor *_tintColor;
+    //UIColor *_tintColor;
+}
+
+- (void)setTintColor:(UIColor *)tint {
+	_tintColor = tint;
+	[self setupLabel];
+	
 }
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier specifier:(PSSpecifier *)specifier {
@@ -36,7 +42,7 @@ NSString *const CSPDevURLKey = @"url";
         _subString2 = specifier.properties[CSPDevSubtitleKey];
         _username = specifier.properties[@"username"];
         _urlType = [specifier.properties[@"provider"] intValue];
-        _tintColor = [UIColor colorFromHexString:[specifier propertyForKey:@"tintColor"] ? : @"FF0000"];
+        //_tintColor = _label.textColor;//[UIColor colorFromHexString:[specifier propertyForKey:@"tintColor"] ? : @"FF0000"];
         self.specifier = specifier;
 
         [self setupForType];
@@ -72,15 +78,17 @@ NSString *const CSPDevURLKey = @"url";
     [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:17.0] range:[content rangeOfString:_primaryString]];
     [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.0] range:[content rangeOfString:_subString1]];
     [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14.0] range:[content rangeOfString:_subString2]];
-    [attributedString addAttribute:NSForegroundColorAttributeName value:_tintColor range:[content rangeOfString:_primaryString]];
-    [attributedString addAttribute:NSForegroundColorAttributeName value:[_tintColor colorWithAlphaComponent:0.75] range:NSMakeRange(_primaryString.length, content.length - _primaryString.length)];
-
-    _label = [UILabel new];
-    [_label setNumberOfLines:0];
-    [_label setTranslatesAutoresizingMaskIntoConstraints:NO];
+    if (_tintColor) { 
+    	[attributedString addAttribute:NSForegroundColorAttributeName value:_tintColor range:[content rangeOfString:_primaryString]];
+    	[attributedString addAttribute:NSForegroundColorAttributeName value:[_tintColor colorWithAlphaComponent:0.75] range:NSMakeRange(_primaryString.length, content.length - _primaryString.length)];
+    }
+    if (!_label) {
+    	_label = [UILabel new];
+    	[_label setNumberOfLines:0];
+    	[_label setTranslatesAutoresizingMaskIntoConstraints:NO];
+    	[self addSubview:_label];
+    }
     [_label setAttributedText:[attributedString copy]];
-
-    [self addSubview:_label];
 }
 
 // setup the image view for the avatar

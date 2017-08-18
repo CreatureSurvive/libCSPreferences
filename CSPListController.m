@@ -17,7 +17,6 @@
 @implementation CSPListController {
 
     NSMutableDictionary *_settings;
-    NSArray *_toggleGroups;
     NSArray *_fontNames;
     CSPListController *_child;
     NSCache *_avatarCache;
@@ -50,8 +49,7 @@
 - (void)setup {
     _bundle = [self bundle];
     _settings = [NSMutableDictionary dictionaryWithContentsOfFile:[self preferencePath]] ? : [NSMutableDictionary dictionary];
-    _toggleGroups = @[@"enabled", @"enabled1"];
-    _tintColor = [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"] ? : @"FF0000"];
+    _tintColor = nil;//[UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"]];
 }
 
 // return the specifiers from .plist
@@ -91,9 +89,8 @@
 
 // sets the tint colors for the view
 - (void)setTintEnabled:(BOOL)enabled {
-    _tintColor = [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"] ? : @"FF0000"];
-
-    if (enabled) {
+    if (enabled && [self.specifier propertyForKey:@"tintColor"]) {
+        _tintColor = [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"]];
         // Color the navbar
         self.navigationController.navigationController.navigationBar.tintColor = _tintColor;
         self.navigationController.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : _tintColor};
@@ -111,6 +108,13 @@
         // Un-Color the navbar when leaving the view
         self.navigationController.navigationController.navigationBar.tintColor = nil;
         self.navigationController.navigationController.navigationBar.titleTextAttributes = nil;
+        
+        // Un-Color the controls when leaving the view
+        [UISwitch appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].onTintColor = nil;
+        [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = nil;
+        [UITextField appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].textColor = nil;
+        [UISegmentedControl appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = nil;
+        [self setSegmentedSliderTrackColor:nil];
 
     }
 }
@@ -127,7 +131,6 @@
     [headerLabel setNumberOfLines:1];
     [headerLabel setFont:[UIFont systemFontOfSize:36]];
     [headerLabel setBackgroundColor:[UIColor clearColor]];
-    [headerLabel setTextColor:_tintColor];
     [headerLabel setTextAlignment:NSTextAlignmentCenter];
     [header addSubview:headerLabel];
     [headerLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -138,13 +141,17 @@
     [subHeaderLabel setNumberOfLines:1];
     [subHeaderLabel setFont:[UIFont systemFontOfSize:17]];
     [subHeaderLabel setBackgroundColor:[UIColor clearColor]];
-    [subHeaderLabel setTextColor:_tintColor];
     [subHeaderLabel setTextAlignment:NSTextAlignmentCenter];
     [header addSubview:subHeaderLabel];
     [subHeaderLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     [header addConstraint:[NSLayoutConstraint constraintWithItem:subHeaderLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:headerLabel attribute:NSLayoutAttributeBottom multiplier:1 constant:5]];
     [header addConstraint:[NSLayoutConstraint constraintWithItem:subHeaderLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:header attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
 
+    if (_tintColor) {
+        [headerLabel setTextColor:_tintColor];
+        [subHeaderLabel setTextColor:_tintColor];
+    }
+    
     self.table.tableHeaderView = header;
 }
 
@@ -234,10 +241,16 @@
     UITableViewCell *cell = (UITableViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
     [cell.textLabel setAdjustsFontSizeToFitWidth:YES];
     [cell.detailTextLabel setAdjustsFontSizeToFitWidth:YES];
-    cell.textLabel.textColor = _tintColor;
+    if (_tintColor) {
+        cell.textLabel.textColor = _tintColor;
+    }
 
     if ([cell isKindOfClass:([CSPDeveloperCell class])]) {
-        [self avatarForCell:(CSPDeveloperCell *)cell];
+    	CSPDeveloperCell *devCell = (CSPDeveloperCell *)cell;
+        [self avatarForCell:devCell];
+        if (_tintColor) {
+            [devCell setTintColor:_tintColor];
+        }
     }
 
     return cell;
@@ -253,7 +266,7 @@
         cell.clipsToBounds = YES;
         if ([[self fontNames] containsObject:cell.detailTextLabel.text])
             cell.detailTextLabel.font = [UIFont fontWithName:cell.detailTextLabel.text size:cell.detailTextLabel.font.pointSize];
-
+        
         if ([cell isKindOfClass:[PSControlTableCell class]]) {
             PSControlTableCell *controlCell = (PSControlTableCell *)cell;
             if (controlCell.control) {
@@ -311,7 +324,8 @@
     NSArray *group = [self specifiersInGroup:[self indexPathForSpecifier:specifier].section];
 
     [self applyChanges:^{
-        if ([_toggleGroups containsObject:key]) {
+        //if ([_toggleGroups containsObject:key]) {
+        if ([specifier propertyForKey:@"isGroupToggle"]) {
             NSPredicate *filter = [self specifierFilterWithOptions:@{ @"keys": @[[specifier propertyForKey:PSKeyNameKey]], @"types": @[@(PSGroupCell)] } excludeOptions:YES];
             [self setSpecifiers:[group filteredArrayUsingPredicate:filter] enabled:[_settings[key] boolValue]];
         }
@@ -426,7 +440,9 @@
 - (SFSafariViewController *)safariBrowserForURL:(NSString *)url {
     SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:url] entersReaderIfAvailable:NO];
     // using this method for coloring because it supports ios 9 as well
-    safari.view.tintColor = _tintColor;
+    if (_tintColor) {
+        safari.view.tintColor = _tintColor;
+    }
     return safari;
 }
 

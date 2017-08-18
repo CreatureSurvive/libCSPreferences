@@ -13,4 +13,5 @@
 
 @property (nonatomic, strong) NSURL *avatarURL;
 @property (nonatomic, strong) UIImageView *avatar;
+@property (nonatomic, strong) UIColor *tintColor;
 @end
