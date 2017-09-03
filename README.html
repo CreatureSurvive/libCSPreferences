@@ -2,11 +2,12 @@
 <html>
 <head>
 <meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
-<title>README.md</title><link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css'><style type='text/css'>html, body {overflow-x: initial !important;}html { font-size: 14px; background-color: rgb(255, 255, 255); color: rgb(51, 51, 51); }
-body { margin: 0px; padding: 0px; height: auto; bottom: 0px; top: 0px; left: 0px; right: 0px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.42857143; overflow-x: hidden; background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; background-position: inherit inherit; background-repeat: inherit inherit; }
+<title>README.md</title><link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css' /><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:  #ffffff; --text-color:  #333333; --code-block-bg-color: inherit; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; bottom: 0px; top: 0px; left: 0px; right: 0px; font-size: 1rem; line-height: 1.42857143; overflow-x: hidden; background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; background-position: inherit inherit; background-repeat: inherit inherit; }
 a:active, a:hover { outline: 0px; }
 .in-text-selection, ::selection { background-color: rgb(181, 214, 252); text-shadow: none; background-position: initial initial; background-repeat: initial initial; }
-#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; word-wrap: break-word; position: relative; padding-bottom: 70px; white-space: pre-wrap; overflow-x: auto; }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; word-wrap: break-word; position: relative; padding-bottom: 70px; white-space: pre-wrap; overflow-x: visible; }
 .for-image #write { padding-left: 8px; padding-right: 8px; }
 body.typora-export { padding-left: 30px; padding-right: 30px; }
 @media screen and (max-width: 500px) { 
@@ -30,10 +31,12 @@ h4 { font-size: 1.4rem; }
 h5 { font-size: 1.2rem; }
 h6 { font-size: 1rem; }
 p { -webkit-margin-before: 1rem; -webkit-margin-after: 1rem; -webkit-margin-start: 0px; -webkit-margin-end: 0px; }
+.typora-export p { white-space: normal; }
 .mathjax-block { margin-top: 0px; margin-bottom: 0px; -webkit-margin-before: 0rem; -webkit-margin-after: 0rem; }
 .hidden { display: none; }
 .md-blockmeta { color: rgb(204, 204, 204); font-weight: bold; font-style: italic; }
 a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.701961); color: rgb(85, 85, 85); border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; }
 #write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; margin: 4px 0px 0px; }
 tr { break-inside: avoid; break-after: auto; }
 thead { display: table-header-group; }
@@ -47,7 +50,7 @@ table.md-table td { min-width: 80px; }
 div.hr:focus { cursor: none; }
 pre { white-space: pre-wrap; }
 .CodeMirror-gutters { margin-right: 4px; }
-.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background-image: inherit; background-size: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: inherit; position: relative !important; background-position: inherit inherit; background-repeat: inherit inherit; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: var(--code-block-bg-color); position: relative !important; }
 .md-diagram-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
 .md-fences .CodeMirror.CodeMirror-wrap { top: -1.6em; margin-bottom: -1.6em; }
 .md-fences.mock-cm { white-space: pre-wrap; }
@@ -64,12 +67,12 @@ blockquote > :last-child { margin-bottom: 0px; }
 blockquote > :first-child { margin-top: 0px; }
 .footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; }
 @media print { 
-  html, body { height: 100%; }
+  html, body { border: 1px solid transparent; height: 99%; break-after: avoid-page; break-before: avoid-page; }
   .typora-export * { -webkit-print-color-adjust: exact; }
   h1, h2, h3, h4, h5, h6 { break-after: avoid-page; orphans: 2; }
   p { orphans: 4; }
   html.blink-to-pdf { font-size: 13px; }
-  .typora-export #write { padding-left: 1cm; padding-right: 1cm; }
+  .typora-export #write { padding-left: 1cm; padding-right: 1cm; padding-bottom: 0px; break-after: avoid-page; }
   .typora-export #write::after { height: 0px; }
   @page { margin: 20mm 0mm; }
 }
@@ -120,16 +123,16 @@ a.md-print-anchor { border: none !important; display: inline-block !important; p
 .MathJax_SVG .MJX-sans-serif { font-family: sans-serif; }
 .MathJax_SVG { display: inline; font-style: normal; font-weight: normal; line-height: normal; zoom: 90%; text-indent: 0px; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0px; min-height: 0px; border: 0px; padding: 0px; margin: 0px; }
 .MathJax_SVG * { transition: none; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; }
 
+
+:root {
+    --side-bar-bg-color: #fafafa;
+    --control-text-color: #777;
+}
 
 @include-when-export url(http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext);
-
-/**
- * css forked from https://github.com/GitbookIO/gitbook 
- * www.gitbook.com
- * Apache License
- * https://github.com/GitbookIO/gitbook/blob/master/LICENSE
- **/
 
 @font-face {
     font-family: 'Open Sans';
@@ -350,7 +353,6 @@ table {
 }
 table tr {
     border-top: 1px solid #cccccc;
-    background-color: white;
     margin: 0;
     padding: 0;
 }
@@ -486,6 +488,10 @@ tt {
     padding-bottom:20px;
 }
 
+.sidebar-tabs {
+    border-bottom: none;
+}
+
 #typora-quick-open {
     border: 1px solid #ddd;
     background-color: #f8f8f8;
@@ -511,10 +517,25 @@ header, .context-menu, .megamenu-content, footer{
     font-family: "Segoe UI", "Arial", sans-serif;
 }
 
+.file-node-content:hover .file-node-icon,
+.file-node-content:hover .file-node-open-state{
+    visibility: visible;
+}
+
+.mac-seamless-mode #typora-sidebar {
+    background-color: #fafafa;
+    background-color: var(--side-bar-bg-color);
+}
+
+.md-lang {
+    color: #b4654d;
+}
+
+
 
 </style>
 </head>
 <body class='typora-export' >
-<div  id='write'  class = 'is-mac'><h1><a name='header-c5' class='md-header-anchor '></a>CSPreferences</h1><p>CSPreferences is a little library I started working on inorder to improve the workflow of working with preference bundles for PreferenceLoader</p><h2><a name='header-c22' class='md-header-anchor '></a>Features</h2><ul><li>Not much yet, check back later</li></ul><h2><a name='header-c33' class='md-header-anchor '></a>Installation</h2><ol><li>Fork/Clone/Download this repository</li><li>build using theos <code>make package install</code></li><li>Configure from settings</li><li>Profit</li></ol><p></p><h2><a name='header-c49' class='md-header-anchor '></a>Credits and Acknowledgments</h2><p>Created and Maintained by <a href='https://creaturecoding.com/'>CreatureSurvive</a> (Dana Buehre)</p><p></p><h2><a name='header-c54' class='md-header-anchor '></a>License</h2><ul><li>This software is licensed under the MIT License, detailed in the file <a href='https://github.com/CreatureSurvive/CSPasteManager/tree/master/LICENCE.md'>LICENSE.md</a></li><li>if you wish to use this code in your project then in addition to the License agreement you must also provie a link to my website <a href='https://creaturecoding.com.' target='_blank' >https://creaturecoding.com.</a> if for any reason you do not wish to include my website in your project, then please contact me so we can discuss another agreement.</li><li><strong>Please dont steel my code!</strong> if you like to use it, then go ahead. Just be sure to provide proper credit.</li></ul><h2><a name='header-c65' class='md-header-anchor '></a>Submit Bugs &amp; or Fixes:</h2><p><a href='https://github.com/CreatureSurvive/CSPreferences/issues' target='_blank' >https://github.com/CreatureSurvive/CSPreferences/issues</a></p><p></p></div>
+<div  id='write'  class = 'is-mac'><h1><a name='header-n0' class='md-header-anchor '></a>libCSPreferences</h1><p>CSPreferences is a little library I started working on inorder to improve the workflow of working with preference bundles for PreferenceLoader</p><h2><a name='header-n4' class='md-header-anchor '></a>Features</h2><ul><li>Not much yet, check back later</li></ul><h2><a name='header-n9' class='md-header-anchor '></a>Installation</h2><ol start='' ><li>Fork/Clone/Download this repository</li><li>build using theos <code>make package</code></li><li>Configure from settings</li><li>Profit</li></ol><h2><a name='header-n24' class='md-header-anchor '></a>Credits and Acknowledgments</h2><p>Created and Maintained by <a href='https://creaturecoding.com/'>CreatureSurvive</a> (Dana Buehre)</p><p></p><h2><a name='header-n29' class='md-header-anchor '></a>License</h2><ul><li>This software is licensed under the MIT License, detailed in the file <a href='https://github.com/CreatureSurvive/CSPasteManager/tree/master/LICENCE.md'>LICENSE.md</a></li><li>if you wish to use this code in your project then in addition to the License agreement you must also provie a link to my website <a href='https://creaturecoding.com.' target='_blank' >https://creaturecoding.com.</a> if for any reason you do not wish to include my website in your project, then please contact me so we can discuss another agreement.</li><li><strong>Please dont steel my code!</strong> if you like to use it, then go ahead. Just be sure to provide proper credit.</li></ul><h2><a name='header-n40' class='md-header-anchor '></a>Submit Bugs &amp; or Fixes:</h2><p><a href='https://github.com/CreatureSurvive/CSPreferences/issues' target='_blank' >https://github.com/CreatureSurvive/CSPreferences/issues</a>  </p><h2><a name='header-n122' class='md-header-anchor '></a>Lines of Code:</h2><table><thead><tr><th>Langueage</th><th>files</th><th>blank</th><th>comment</th><th>code</th></tr></thead><tbody><tr><td><strong>Objective C</strong></td><td>12</td><td>333</td><td>202</td><td>1209</td></tr><tr><td><strong>HTML</strong></td><td>1</td><td>30</td><td>0</td><td>490</td></tr><tr><td><strong>C/C++ Header</strong></td><td>14</td><td>48</td><td>98</td><td>108</td></tr><tr><td><strong>Markdown</strong></td><td>3</td><td>20</td><td>0</td><td>44</td></tr><tr><td><strong>make</strong></td><td>2</td><td>11</td><td>8</td><td>30</td></tr><tr><td><strong>Objective C++</strong></td><td>1</td><td>0</td><td>0</td><td>1</td></tr><tr><td><strong>SUM:</strong></td><td>33</td><td>442</td><td>308</td><td>1882</td></tr></tbody></table></div>
 </body>
 </html>

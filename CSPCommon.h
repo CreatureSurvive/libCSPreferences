@@ -2,12 +2,13 @@
  * @Author: Dana Buehre <creaturesurvive>
  * @Date:   01-07-2017 5:45:14
  * @Email:  dbuehre@me.com
- * @Project: motuumLS
  * @Filename: CSPCommon.h
  * @Last modified by:   creaturesurvive
- * @Last modified time: 11-08-2017 3:13:37
+ * @Last modified time: 03-09-2017 9:39:00
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
+
+
 //TODO seporate public and private
 //TODO define headers within the project rather than using include directory
 #import <Preferences/PSListController.h>
@@ -25,6 +26,9 @@
 
 #import "CSPListController.h"
 #import "CSPBrowserPreviewController.h"
+
+#import "CSPBackupListViewController.h"
+#import "CSPChangeLogController.h"
 
 #import "CSPDeveloperCell.h"
 

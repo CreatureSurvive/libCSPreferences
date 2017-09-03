@@ -2,10 +2,9 @@
  * @Author: Dana Buehre <creaturesurvive>
  * @Date:   01-07-2017 10:49:52
  * @Email:  dbuehre@me.com
- * @Project: motuumLS
  * @Filename: CSPListController.m
  * @Last modified by:   creaturesurvive
- * @Last modified time: 12-08-2017 9:13:15
+ * @Last modified time: 03-09-2017 9:39:46
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
@@ -23,6 +22,8 @@
     NSString *_cacheDirectoryPath;
     NSBundle *_bundle;
     UIColor *_tintColor;
+    UIColor *_globalTintColor;
+    BOOL _refreshQueued;
 }
 
 #pragma mark Initialize
@@ -38,7 +39,6 @@
 - (id)initWithPlistName:(NSString *)plist inBundle:(NSBundle *)bundle {
     if ((self = [super init]) != nil) {
         [self setup];
-        //[NSBundle bundleWithPath:[NSString stringWithFormat:@"/Library/PreferenceBundles/%@.bundle", bundleName]];
         _bundle = bundle;
         _specifiers = [self loadSpecifiersFromPlistName:plist target:self bundle:_bundle];
     }
@@ -47,9 +47,18 @@
 }
 
 - (void)setup {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recievedNotification:) name:@"kCSPReloadSettings" object:nil];
     _bundle = [self bundle];
+
     _settings = [NSMutableDictionary dictionaryWithContentsOfFile:[self preferencePath]] ? : [NSMutableDictionary dictionary];
-    _tintColor = nil;//[UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"]];
+    _tintColor = nil;
+}
+
+- (void)recievedNotification:(NSNotification *)notification {
+    if ([notification.name isEqualToString:@"kCSPReloadSettings"]) {
+        _settings = [NSMutableDictionary dictionaryWithContentsOfFile:[self preferencePath]] ? : [NSMutableDictionary dictionary];
+        _refreshQueued = YES;
+    }
 }
 
 // return the specifiers from .plist
@@ -77,6 +86,9 @@
 // tint the view after it loads
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    if (_refreshQueued) {
+        [self refreshAllSpecifiersAnimated:NO];
+    }
     [self setTintEnabled:YES];
     [self setupHeader];
 }
@@ -87,10 +99,21 @@
     [self setTintEnabled:NO];
 }
 
+- (UIColor *)globalTintColor {
+    if (!_globalTintColor) {
+        NSDictionary *globals = [NSDictionary dictionaryWithContentsOfFile:[_bundle pathForResource:@"globals" ofType:@"plist"]] ? : nil;
+        if (globals && globals[@"globalTintColor"]) {
+            _globalTintColor = [UIColor colorFromHexString:globals[@"globalTintColor"]];
+        }
+    }
+    return _globalTintColor;
+}
+
 // sets the tint colors for the view
 - (void)setTintEnabled:(BOOL)enabled {
-    if (enabled && [self.specifier propertyForKey:@"tintColor"]) {
-        _tintColor = [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"]];
+    _tintColor = [self.specifier propertyForKey:@"tintColor"] ? [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"]] :
+                 [self globalTintColor] ? : nil;
+    if (enabled && _tintColor) {
         // Color the navbar
         self.navigationController.navigationController.navigationBar.tintColor = _tintColor;
         self.navigationController.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : _tintColor};
@@ -108,7 +131,7 @@
         // Un-Color the navbar when leaving the view
         self.navigationController.navigationController.navigationBar.tintColor = nil;
         self.navigationController.navigationController.navigationBar.titleTextAttributes = nil;
-        
+
         // Un-Color the controls when leaving the view
         [UISwitch appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].onTintColor = nil;
         [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = nil;
@@ -151,7 +174,7 @@
         [headerLabel setTextColor:_tintColor];
         [subHeaderLabel setTextColor:_tintColor];
     }
-    
+
     self.table.tableHeaderView = header;
 }
 
@@ -207,6 +230,10 @@
             } else if ([specifier propertyForKey:@"mailto"]) {
                 MFMailComposeViewController *mailViewController = [CSPMailComposeManager mailComposeControllerForSpecifier:specifier delegate:self];
                 return mailViewController;
+            } else if ([[specifier propertyForKey:@"detail"] isEqualToString:@"CSPBackupListViewController"]) {
+                vc = [[CSPBackupListViewController alloc] init];
+            } else if ([[specifier propertyForKey:@"detail"] isEqualToString:@"CSPChangeLogController"]) {
+                vc = [[CSPChangeLogController alloc] init];
             }
         } break;
     }
@@ -246,7 +273,7 @@
     }
 
     if ([cell isKindOfClass:([CSPDeveloperCell class])]) {
-    	CSPDeveloperCell *devCell = (CSPDeveloperCell *)cell;
+        CSPDeveloperCell *devCell = (CSPDeveloperCell *)cell;
         [self avatarForCell:devCell];
         if (_tintColor) {
             [devCell setTintColor:_tintColor];
@@ -266,7 +293,7 @@
         cell.clipsToBounds = YES;
         if ([[self fontNames] containsObject:cell.detailTextLabel.text])
             cell.detailTextLabel.font = [UIFont fontWithName:cell.detailTextLabel.text size:cell.detailTextLabel.font.pointSize];
-        
+
         if ([cell isKindOfClass:[PSControlTableCell class]]) {
             PSControlTableCell *controlCell = (PSControlTableCell *)cell;
             if (controlCell.control) {
@@ -417,6 +444,21 @@
     [self reloadSpecifier:specifier];
 }
 
+// refreshes all of the specifiers in the view and optionaly animates the changes
+- (void)refreshAllSpecifiersAnimated:(BOOL)animated {
+    [self reload];
+    for (PSSpecifier *specifier in _specifiers) {
+        [self checkForUpdatesWithSpecifier:specifier animated:NO];
+    }
+    _refreshQueued = NO;
+}
+
+- (void)setBundleValueInSpecifiers {
+    for (PSSpecifier *specifier in _specifiers) {
+        [specifier setProperty:_bundle.bundlePath forKey:@"bundle"];
+    }
+}
+
 // refreshes a cell by calling setCellForRowAtIndexPath
 - (void)refreshCellWithSpecifier:(PSSpecifier *)specifier {
     [self setCellForRowAtIndexPath:[self indexPathForSpecifier:specifier] enabled:YES];
@@ -546,6 +588,10 @@
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
     [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

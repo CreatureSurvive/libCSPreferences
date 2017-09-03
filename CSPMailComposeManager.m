@@ -1,3 +1,14 @@
+/**
+ * @Author: Dana Buehre <creaturesurvive>
+ * @Date:   11-08-2017 9:54:24
+ * @Email:  dbuehre@me.com
+ * @Filename: CSPMailComposeManager.m
+ * @Last modified by:   creaturesurvive
+ * @Last modified time: 03-09-2017 9:39:56
+ * @Copyright: Copyright © 2014-2017 CreatureSurvive
+ */
+
+
 #import "CSPMailComposeManager.h"
 
 @implementation CSPMailComposeManager

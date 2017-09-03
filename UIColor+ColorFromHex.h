@@ -1,7 +1,13 @@
-//
-// Created by Dana Buehre on 6/17/17.
-// Copyright (c) 2017 CreatureCoding. All rights reserved.
-//
+/**
+ * @Author: Dana Buehre <creaturesurvive>
+ * @Date:   02-07-2017 5:12:52
+ * @Email:  dbuehre@me.com
+ * @Filename: UIColor+ColorFromHex.h
+ * @Last modified by:   creaturesurvive
+ * @Last modified time: 03-09-2017 9:41:36
+ * @Copyright: Copyright © 2014-2017 CreatureSurvive
+ */
+
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>

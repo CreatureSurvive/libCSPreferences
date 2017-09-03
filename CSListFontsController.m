@@ -2,49 +2,49 @@
  * @Author: Dana Buehre <creaturesurvive>
  * @Date:   07-07-2017 12:32:06
  * @Email:  dbuehre@me.com
- * @Project: motuumLS
  * @Filename: CSListFontsController.m
  * @Last modified by:   creaturesurvive
- * @Last modified time: 11-08-2017 8:03:10
+ * @Last modified time: 03-09-2017 9:38:41
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
 #import "CSListFontsController.h"
 
-@implementation CSListFontsController {
-    UIColor *_tintColor;
-}
+@implementation CSListFontsController
 
 
 // set the tint colors before the view appears
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setTint];
+    // [self setTint];
 }
 
 // sets the tint colors for the view
-- (void)setTint {
-    if ([self.specifier propertyForKey:@"tintColor"]) {
-
-        _tintColor = [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"] ? : @"FF0000"];
-
-        // Color the navbar
-        self.navigationController.navigationController.navigationBar.tintColor = _tintColor;
-        self.navigationController.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : _tintColor};
-
-        // set tableView tint color
-        [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = _tintColor;
-
-        // set the view tint
-        self.view.tintColor = _tintColor;
-    }
-}
+// - (void)setTint {
+//     if ([self.specifier propertyForKey:@"tintColor"] || self.tintColor) {
+//
+//         _tintColor = [self.specifier propertyForKey:@"tintColor"] ? [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"]] :
+//                      self.tintColor ? : nil;
+//
+//         if (!_tintColor) return;
+//
+//         // Color the navbar
+//         self.navigationController.navigationController.navigationBar.tintColor = _tintColor;
+//         self.navigationController.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : _tintColor};
+//
+//         // set tableView tint color
+//         [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = _tintColor;
+//
+//         // set the view tint
+//         self.view.tintColor = _tintColor;
+//     }
+// }
 
 // Adjust labels when loading the cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = (UITableViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
     // [cell.textLabel setAdjustsFontSizeToFitWidth:YES]; 
-    cell.textLabel.textColor = _tintColor;
+    cell.textLabel.textColor = self.tintColor;
     cell.textLabel.font = [UIFont fontWithName:cell.textLabel.text size:20];
     return cell;
 }

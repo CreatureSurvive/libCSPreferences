@@ -5,7 +5,7 @@ Version: 0.0.1
 Architecture: iphoneos-arm
 Description: An awesome Preferences Library!
 Maintainer: CreatureSurvive
-Depiction: https://creaturesurvive.github.io/CSPreferences/
+Depiction: https://creaturesurvive.github.io/libCSPreferences/
 Author: CreatureSurvive
 Section: Libraries
 Tag: role::developer
