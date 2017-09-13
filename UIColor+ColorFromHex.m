@@ -4,7 +4,7 @@
  * @Email:  dbuehre@me.com
  * @Filename: UIColor+ColorFromHex.m
  * @Last modified by:   creaturesurvive
- * @Last modified time: 03-09-2017 9:41:44
+ * @Last modified time: 12-09-2017 12:13:19
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
@@ -99,6 +99,36 @@ int length(int i) {
 + (BOOL)isValidHexString:(NSString *)hexStr {
     NSCharacterSet *hexChars = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789ABCDEFabcdef"] invertedSet];
     return (NSNotFound == [hexStr rangeOfCharacterFromSet:hexChars].location);
+}
+
++ (NSString *)hexStringFromColor:(UIColor *)color {
+
+    CGFloat red, green, blue;
+    [color getRed:&red green:&green blue:&blue alpha:nil];
+    red = roundf(red * 255.0f);
+    green = roundf(green * 255.0f);
+    blue = roundf(blue * 255.0f);
+
+    return [[[NSString alloc] initWithFormat:@"%02x%02x%02x", (int)red, (int)green, (int)blue] uppercaseString];
+}
+
++ (NSString *)informationStringForColor:(UIColor *)color {
+    CGFloat h, s, b, a, r, g, bb, aa;
+    [color getHue:&h saturation:&s brightness:&b alpha:&a];
+    [color getRed:&r green:&g blue:&bb alpha:&aa];
+    // if (wide) {
+    //     return [NSString stringWithFormat:@"#%@\n\nR: %.f       H: %.f\nG: %.f       S: %.f\nB: %.f       B: %.f", [UIColor hexStringFromColor:color], r * 255, h * 360, g * 255, s * 100, bb * 255, b * 100];
+    // }
+    return [NSString stringWithFormat:@"#%@\n\nR: %.f\nG: %.f\nB: %.f\nA: %.f\n\nH: %.f\nS: %.f\nB: %.f\nA: %.f", [UIColor hexStringFromColor:color], r * 255, g * 255, bb * 255, aa * 100, h * 360, s * 100, b * 100, a * 100];
+}
+
++ (BOOL)isColorLight:(UIColor *)color {
+    CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
+    [color getRed:&red green:&green blue:&blue alpha:&alpha];
+
+    CGFloat brightness = (((red * 255) * 299) + ((green * 255) * 587) + ((blue * 255) * 114)) / 1000;
+
+    return (brightness >= 128.0);
 }
 
 @end

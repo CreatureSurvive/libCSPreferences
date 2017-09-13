@@ -3,7 +3,7 @@
 # @Email:  dbuehre@me.com
 # @Filename: Makefile
 # @Last modified by:   creaturesurvive
-# @Last modified time: 03-09-2017 9:41:01
+# @Last modified time: 11-09-2017 4:41:03
 # @Copyright: Copyright © 2014-2017 CreatureSurvive
 
 
@@ -20,12 +20,14 @@ libCSPreferences_FILES = $(wildcard *.m) $(wildcard *.mm) $(wildcard *.xm)
 libCSPreferences_FRAMEWORKS = UIKit AudioToolbox CoreGraphics SafariServices MessageUI
 libCSPreferences_PRIVATE_FRAMEWORKS = Preferences
 libCSPreferences_CFLAGS = -fobjc-arc
+libCSPreferences_LDFLAGS += -lCSColorPicker
 
 before-stage::
 	find . -name ".DS_Store" -delete
 
 after-install::
 	install.exec "killall -9 Preferences"
+	# install.exec "killall -9 SpringBoard"
 
 SUBPROJECTS += libCSPreferencesHooks
 include $(THEOS_MAKE_PATH)/aggregate.mk

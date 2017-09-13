@@ -4,7 +4,7 @@
  * @Email:  dbuehre@me.com
  * @Filename: CSPListController.h
  * @Last modified by:   creaturesurvive
- * @Last modified time: 03-09-2017 9:39:40
+ * @Last modified time: 11-09-2017 8:33:04
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
@@ -15,8 +15,10 @@
 #import "CSPMailComposeManager.h"
 
 @interface CSPListController : PSListController <UITableViewDelegate, UIViewControllerPreviewingDelegate, MFMailComposeViewControllerDelegate>
+@property (nonatomic, strong) NSMutableDictionary *settings;
 @property (nonatomic, strong) id previewingContext;
 - (id)initWithPlistName:(NSString *)plist inBundle:(NSBundle *)bundle;
 - (void)refreshCellWithSpecifier:(PSSpecifier *)specifier;
 - (void)openURLInBrowser:(NSString *)url;
+- (UIColor *)globalTintColor;
 @end

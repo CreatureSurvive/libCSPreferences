@@ -4,7 +4,7 @@
  * @Email:  dbuehre@me.com
  * @Filename: CSListItemsController.m
  * @Last modified by:   creaturesurvive
- * @Last modified time: 03-09-2017 9:38:38
+ * @Last modified time: 12-09-2017 2:32:06
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
@@ -15,33 +15,29 @@
 // set the tint colors before the view appears
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    // [self setTint];
+    if (!self.tintColor) {
+        [self setTint];
+    }
 }
 
 // sets the tint colors for the view
-// - (void)setTint {
-//     if ([self.specifier propertyForKey:@"tintColor"]) {
-//
-//         _tintColor = [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"] ? : @"FF0000"];
-//
-//         // Color the navbar
-//         self.navigationController.navigationController.navigationBar.tintColor = _tintColor;
-//         self.navigationController.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : _tintColor};
-//
-//         // set tableView tint color
-//         [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = _tintColor;
-//
-//         // set the view tint
-//         self.view.tintColor = _tintColor;
-//     }
-// }
+- (void)setTint {
+    self.textColor = [(CSPListController *) self.parentController globalTintColor];
+    self.navigationController.navigationController.navigationBar.tintColor = self.textColor;
+    self.navigationController.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : self.textColor};
+    [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = self.textColor;
+    self.view.tintColor = self.textColor;
+}
 
 // Adjust labels when loading the cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = (UITableViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
     [cell.textLabel setAdjustsFontSizeToFitWidth:YES];
     [cell.detailTextLabel setAdjustsFontSizeToFitWidth:YES];
-    cell.textLabel.textColor = self.tintColor;
+    if (!self.textColor) {
+        self.textColor = [(CSPListController *) self.parentController globalTintColor];
+    }
+    cell.textLabel.textColor = self.textColor;
     return cell;
 }
 

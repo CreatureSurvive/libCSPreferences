@@ -4,7 +4,7 @@
  * @Email:  dbuehre@me.com
  * @Filename: CSPBackupListViewController.m
  * @Last modified by:   creaturesurvive
- * @Last modified time: 01-09-2017 8:44:58
+ * @Last modified time: 08-09-2017 9:51:56
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
@@ -120,25 +120,31 @@
     NSError *error = nil;
 
     if (![[NSFileManager defaultManager] removeItemAtPath:filePath error:&error]) {
-        CSDebug(@"[Error] %@ (%@)", error, filePath);
+        if (error) {
+            CSAlertLog(@"[Error] %@ (%@)", error, filePath);
+        }
     }
     [self reloadSpecifiers];
 }
 
 - (void)copyFileAtPath:(NSString *)fromPath toPath:(NSString *)toPath replaceExisting:(BOOL)destructive {
+    // CSAlertLog(@"from: %@, to: %@", fromPath, toPath);
     NSError *error = nil;
 
-    if (destructive) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[toPath stringByDeletingLastPathComponent] isDirectory:nil]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:[toPath stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            CSAlertLog(@"[Error] %@ (copyFrom:%@ | copyTo:%@)", error, fromPath, toPath);
+        }
+    } else if (destructive && [[NSFileManager defaultManager] fileExistsAtPath:toPath isDirectory:nil]) {
         [self removeFileAtPath:toPath];
     }
 
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[toPath stringByDeletingLastPathComponent] isDirectory:nil]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:[toPath stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
+    [[NSFileManager defaultManager] copyItemAtPath:fromPath toPath:toPath error:&error];
+    if (error) {
+        CSAlertLog(@"[Error] %@ (copyFrom:%@ | copyTo:%@)", error, fromPath, toPath);
     }
 
-    if ([[NSFileManager defaultManager] copyItemAtPath:fromPath toPath:toPath error:&error]) {
-        CSDebug(@"[Error] %@ (copyFrom:%@ | copyTo:%@)", error, fromPath, toPath);
-    }
 }
 
 - (void)renameFilePopup:(NSString *)fileName {

@@ -4,18 +4,18 @@
  * @Email:  dbuehre@me.com
  * @Filename: CSPListController.m
  * @Last modified by:   creaturesurvive
- * @Last modified time: 03-09-2017 9:39:46
+ * @Last modified time: 12-09-2017 1:05:50
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
 
 #include "CSPListController.h"
+#include <UIKit/UITableViewCell+Private.h>
 #import "AudioToolbox/AudioToolbox.h"
-
 
 @implementation CSPListController {
 
-    NSMutableDictionary *_settings;
+    // NSMutableDictionary *_settings;
     NSArray *_fontNames;
     CSPListController *_child;
     NSCache *_avatarCache;
@@ -23,6 +23,8 @@
     NSBundle *_bundle;
     UIColor *_tintColor;
     UIColor *_globalTintColor;
+    NSMutableArray *_notificationQueue;
+    NSTimer *_notificationTimer;
     BOOL _refreshQueued;
 }
 
@@ -48,7 +50,7 @@
 
 - (void)setup {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recievedNotification:) name:@"kCSPReloadSettings" object:nil];
-    _bundle = [self bundle];
+    _bundle = [self bundle] ? : [(CSPListController *) self.parentController bundle];
 
     _settings = [NSMutableDictionary dictionaryWithContentsOfFile:[self preferencePath]] ? : [NSMutableDictionary dictionary];
     _tintColor = nil;
@@ -97,6 +99,10 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self setTintEnabled:NO];
+    if ([self.parentController isKindOfClass:[CSPListController class]]) {
+        [(CSPListController *) self.parentController reloadSpecifier:self.specifier];
+        [(CSPListController *) self.parentController setSettings:_settings];
+    }
 }
 
 - (UIColor *)globalTintColor {
@@ -146,10 +152,10 @@
 - (void)setupHeader {
     if (![self.specifier propertyForKey:@"headerTitle"]) return;
 
-    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.table.bounds.size.width, 126)];
-    UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    UILabel *subHeaderLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.table.bounds.size.width, [[self.specifier propertyForKey:@"headerHeight"] floatValue])];
+    UILabel *headerLabel, *subHeaderLabel, *subHeaderLabel2;
 
+    headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     [headerLabel setText:[self.specifier propertyForKey:@"headerTitle"]];
     [headerLabel setNumberOfLines:1];
     [headerLabel setFont:[UIFont systemFontOfSize:36]];
@@ -160,19 +166,38 @@
     [header addConstraint:[NSLayoutConstraint constraintWithItem:headerLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:header attribute:NSLayoutAttributeBottom multiplier:0.2 constant:0]];
     [header addConstraint:[NSLayoutConstraint constraintWithItem:headerLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:header attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
 
-    [subHeaderLabel setText:[self.specifier propertyForKey:@"headerSubtitle"]];
-    [subHeaderLabel setNumberOfLines:1];
-    [subHeaderLabel setFont:[UIFont systemFontOfSize:17]];
-    [subHeaderLabel setBackgroundColor:[UIColor clearColor]];
-    [subHeaderLabel setTextAlignment:NSTextAlignmentCenter];
-    [header addSubview:subHeaderLabel];
-    [subHeaderLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [header addConstraint:[NSLayoutConstraint constraintWithItem:subHeaderLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:headerLabel attribute:NSLayoutAttributeBottom multiplier:1 constant:5]];
-    [header addConstraint:[NSLayoutConstraint constraintWithItem:subHeaderLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:header attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+    if ([self.specifier propertyForKey:@"headerSubtitle"]) {
+        subHeaderLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        [subHeaderLabel setText:[self.specifier propertyForKey:@"headerSubtitle"]];
+        [subHeaderLabel setNumberOfLines:1];
+        [subHeaderLabel setFont:[UIFont systemFontOfSize:17]];
+        [subHeaderLabel setBackgroundColor:[UIColor clearColor]];
+        [subHeaderLabel setTextAlignment:NSTextAlignmentCenter];
+        [header addSubview:subHeaderLabel];
+        [subHeaderLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [header addConstraint:[NSLayoutConstraint constraintWithItem:subHeaderLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:headerLabel attribute:NSLayoutAttributeBottom multiplier:1 constant:5]];
+        [header addConstraint:[NSLayoutConstraint constraintWithItem:subHeaderLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:header attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+    }
+
+    if ([self.specifier propertyForKey:@"headerSubtitle2"]) {
+        subHeaderLabel2 = [[UILabel alloc] initWithFrame:CGRectZero];
+        [subHeaderLabel2 setText:[self.specifier propertyForKey:@"headerSubtitle2"]];
+        [subHeaderLabel2 setNumberOfLines:1];
+        [subHeaderLabel2 setFont:[UIFont systemFontOfSize:17]];
+        [subHeaderLabel2 setBackgroundColor:[UIColor clearColor]];
+        [subHeaderLabel2 setTextAlignment:NSTextAlignmentCenter];
+        [header addSubview:subHeaderLabel2];
+        [subHeaderLabel2 setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [header addConstraint:[NSLayoutConstraint constraintWithItem:subHeaderLabel2 attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:subHeaderLabel attribute:NSLayoutAttributeBottom multiplier:1 constant:5]];
+        [header addConstraint:[NSLayoutConstraint constraintWithItem:subHeaderLabel2 attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:header attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+    }
 
     if (_tintColor) {
         [headerLabel setTextColor:_tintColor];
-        [subHeaderLabel setTextColor:_tintColor];
+        if (subHeaderLabel)
+            [subHeaderLabel setTextColor:_tintColor];
+        if (subHeaderLabel2)
+            [subHeaderLabel2 setTextColor:_tintColor];
     }
 
     self.table.tableHeaderView = header;
@@ -211,9 +236,6 @@
 
     [previewingContext setSourceRect:[self cachedCellForSpecifier:specifier].frame];
     switch (specifier.cellType) {
-        case PSButtonCell: {
-            vc = [[CSPListController alloc] initWithPlistName:[specifier propertyForKey:@"pushPlist"] inBundle:_bundle];
-        } break;
 
         case PSLinkListCell: {
             NSString *detail = [specifier propertyForKey:PSDetailControllerClassKey];
@@ -224,16 +246,23 @@
             }
         } break;
 
+        case PSButtonCell:
         case PSLinkCell: {
             if ([specifier propertyForKey:@"url"]) {
                 vc = [[CSPBrowserPreviewController alloc] initWithURL:[specifier propertyForKey:@"url"]];
             } else if ([specifier propertyForKey:@"mailto"]) {
                 MFMailComposeViewController *mailViewController = [CSPMailComposeManager mailComposeControllerForSpecifier:specifier delegate:self];
                 return mailViewController;
+            } else if ([specifier propertyForKey:@"pushPlist"]) {
+                vc = [[CSPListController alloc] initWithPlistName:[self pushToViewNameForSpecifier:specifier] inBundle:_bundle];
+            } else if ([specifier propertyForKey:@"pushPlist"]) {
+
             } else if ([[specifier propertyForKey:@"detail"] isEqualToString:@"CSPBackupListViewController"]) {
                 vc = [[CSPBackupListViewController alloc] init];
             } else if ([[specifier propertyForKey:@"detail"] isEqualToString:@"CSPChangeLogController"]) {
                 vc = [[CSPChangeLogController alloc] init];
+            } else if ([specifier propertyForKey:@"fallback"]) {
+                vc = [[CSPColorPreviewController alloc] initWithColor:[UIColor colorFromHexString:_settings[[specifier propertyForKey:PSKeyNameKey]] ? : [specifier propertyForKey:@"fallback"]]];
             }
         } break;
     }
@@ -265,11 +294,26 @@
 
 // Adjust labels when loading the cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = (UITableViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
+    PSTableCell *cell = (PSTableCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
     [cell.textLabel setAdjustsFontSizeToFitWidth:YES];
     [cell.detailTextLabel setAdjustsFontSizeToFitWidth:YES];
     if (_tintColor) {
         cell.textLabel.textColor = _tintColor;
+        if ([cell isKindOfClass:[PSEditableTableCell class]]) {
+            [(PSEditableTableCell *) cell textField].textColor = [UIColor lightGrayColor];
+            [(PSEditableTableCell *) cell textField].textAlignment = NSTextAlignmentRight;
+            if ([[self specifierAtIndexPath:indexPath] propertyForKey:@"isDecimal"]) {
+                [(PSEditableTableCell *) cell textField].keyboardType = UIKeyboardTypeDecimalPad;
+            }
+        }
+    }
+
+    if ([[cell.specifier propertyForKey:@"seporatorHidden"] boolValue]) {
+        cell.separatorInset = UIEdgeInsetsMake(0.f, 0.f, 0.f, [UIScreen mainScreen].bounds.size.width);
+    }
+
+    if ([cell isKindOfClass:NSClassFromString(@"CSAlertColorCell")]) {
+        [[self specifierAtIndexPath:indexPath] setProperty:self forKey:@"parent"];
     }
 
     if ([cell isKindOfClass:([CSPDeveloperCell class])]) {
@@ -291,11 +335,19 @@
         cell.textLabel.enabled = enabled;
         cell.detailTextLabel.enabled = enabled;
         cell.clipsToBounds = YES;
-        if ([[self fontNames] containsObject:cell.detailTextLabel.text])
+        if ([[self fontNames] containsObject:cell.detailTextLabel.text]) {
             cell.detailTextLabel.font = [UIFont fontWithName:cell.detailTextLabel.text size:cell.detailTextLabel.font.pointSize];
+        }
+
+        if ([cell isKindOfClass:[PSEditableTableCell class]]) {
+            if ([[self specifierAtIndexPath:indexPath] propertyForKey:@"isDecimal"]) {
+                [(PSEditableTableCell *) cell textField].keyboardType = UIKeyboardTypeDecimalPad;
+            }
+        }
 
         if ([cell isKindOfClass:[PSControlTableCell class]]) {
             PSControlTableCell *controlCell = (PSControlTableCell *)cell;
+
             if (controlCell.control) {
                 controlCell.control.enabled = enabled;
             }
@@ -312,11 +364,14 @@
 
 // writes the preferences to disk after setting additionally posts a notification
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
+    // always load from disk or everything breaks, optionally add read from default plist here
+    _settings = ([NSMutableDictionary dictionaryWithContentsOfFile:[self preferencePath]] ? : [NSMutableDictionary dictionary]);
     NSString *key = [specifier propertyForKey:PSKeyNameKey];
     [_settings setObject:value forKey:key];
     [_settings writeToFile:[self preferencePath] atomically:YES];
     // haptic feedback when setting a value, currently overlaps with stock toggles
     // AudioServicesPlaySystemSound(1519);
+    // CFPreferencesSetAppValue((__bridge CFStringRef)key, (__bridge CFPropertyListRef)value, (__bridge CFStringRef)_bundle.bundleIdentifier);
     [self checkForUpdatesWithSpecifier:specifier animated:YES];
 
     // if any other specifiers have the same key as the specifier that changed, then we need to update those specifiers aswell as the UI
@@ -325,14 +380,22 @@
         [self reloadSpecifier:sameKeySpecifier animated:YES];
     }
 
-    NSString *post = [specifier propertyForKey:@"PostNotification"];
-    if (post) {
-        CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (__bridge CFStringRef)post, NULL, NULL, TRUE);
+    [self queueNotificationIfNecessary:[specifier propertyForKey:@"PostNotification"]];
+
+    if ([[specifier propertyForKey:@"loadPlist"] boolValue]) {
+        if ([self.parentController isKindOfClass:[CSPListController class]]) {
+
+            [(CSPListController *) self.parentController setSettings:_settings];
+        }
+        [self removeContiguousSpecifiers:_specifiers];
+        [self addSpecifiersFromArray:[self loadSpecifiersFromPlistName:value target:self bundle:_bundle] animated:NO];
     }
 }
 
 // returns the settings from disk when loading else reads default
 - (id)readPreferenceValue:(PSSpecifier *)specifier {
+    // always load from disk or everything breaks, optionally add read from default plist here
+    _settings = ([NSMutableDictionary dictionaryWithContentsOfFile:[self preferencePath]] ? : [NSMutableDictionary dictionary]);
     NSString *key = [specifier propertyForKey:PSKeyNameKey];
     id defaultValue = [specifier propertyForKey:PSDefaultValueKey];
     id plistValue = [_settings objectForKey:key];
@@ -341,6 +404,27 @@
     [self checkForUpdatesWithSpecifier:specifier animated:NO];
 
     return plistValue;
+}
+
+// ensures that we never spam postNotifications, only post once after 1/10 of a second of inactivity, usefull for continuous sliders so they dont post hundreds of notifications
+- (void)queueNotificationIfNecessary:(NSString *)notification {
+    if (!notification) {
+        return;
+    }
+    if (!_notificationQueue || ![_notificationQueue containsObject:notification]) {
+        [_notificationQueue addObject:notification];
+    }
+
+    if (_notificationTimer) {
+        [_notificationTimer invalidate];
+        _notificationTimer = nil;
+    }
+    _notificationTimer = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)0.1 target:[NSBlockOperation blockOperationWithBlock:^{
+        for (NSString *post in _notificationQueue) {
+            CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (__bridge CFStringRef)post, NULL, NULL, TRUE);
+        }
+        _notificationQueue = nil;
+    }] selector:@selector(main) userInfo:nil repeats:NO];
 }
 
 // TODO create public methods
@@ -495,10 +579,23 @@
     [self openURLInBrowser:[sender propertyForKey:@"url"]];
 }
 
+- (NSString *)pushToViewNameForSpecifier:(PSSpecifier *)specifier {
+    NSString *plist = [specifier propertyForKey:@"pushPlist"];
+
+    if ([plist hasPrefix:@":"]) {
+        plist = _settings[[plist substringFromIndex:1]];
+        if (![plist length]) {
+            plist = [specifier propertyForKey:PSDefaultValueKey];
+        }
+    }
+    return plist;
+}
+
 // open controller action
 - (void)pushToView:(PSSpecifier *)sender {
-    _child = [[CSPListController alloc] initWithPlistName:[sender propertyForKey:@"pushPlist"] inBundle:_bundle];
+    _child = [[CSPListController alloc] initWithPlistName:[self pushToViewNameForSpecifier:sender] inBundle:_bundle];
     [_child setSpecifier:sender];
+    [_child setParentController:self];
     [self.navigationController pushViewController:_child animated:YES];
 }
 
@@ -506,35 +603,6 @@
 - (void)email:(PSSpecifier *)sender {
     MFMailComposeViewController *mailViewController = [CSPMailComposeManager mailComposeControllerForSpecifier:sender delegate:self];
     [self presentViewController:mailViewController animated:YES completion:nil];
-}
-
-// respring action
-- (void)respring {
-    UIAlertAction *cancelAction, *confirmAction;
-    UIAlertController *alertController;
-    alertController = [UIAlertController alertControllerWithTitle:@"CSPreferences"
-                                                          message:@"Are you sure you want to respring?"
-                                                   preferredStyle:UIAlertControllerStyleActionSheet];
-
-    cancelAction = [UIAlertAction
-                    actionWithTitle:@"Cancel"
-                              style:UIAlertActionStyleCancel
-                            handler:nil];
-
-    confirmAction = [UIAlertAction
-                     actionWithTitle:@"Respring"
-                               style:UIAlertActionStyleDestructive
-                             handler:^(UIAlertAction *action) {
-        pid_t pid;
-        int status;
-        const char *args[] = {"killall", "SpringBoard", NULL};
-        posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char *const *)args, NULL);
-        waitpid(pid, &status, WEXITED);
-    }];
-
-    [alertController addAction:cancelAction];
-    [alertController addAction:confirmAction];
-    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma mark Misc
@@ -573,6 +641,12 @@
     if (!_fontNames) {
         NSMutableArray *names = [NSMutableArray new];
         [names addObjectsFromArray:@[@".SFUIDisplay-UltraLight", @".SFUIDisplay-Thin", @".SFUIDisplay-Light", @".SFUIDisplay-Regular", @".SFUIDisplay-Medium", @".SFUIDisplay-Semibold", @".SFUIDisplay-Bold", @".SFUIDisplay-Heavy", @".SFUIDisplay-Black"]];
+
+        // for (NSString *fontPath in [UIFont customFonts]) {
+        //     NSURL *URL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", @"/User/Documents/CSPreferences/fonts", fontPath]];
+        //     [UIFont registerFontFromURL:URL];
+        // }
+        [UIFont registerFonts];
 
         for (NSString *familyName in [UIFont familyNames]) {
             for (NSString *fontName in [UIFont fontNamesForFamilyName:familyName]) {

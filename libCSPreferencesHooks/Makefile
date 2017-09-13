@@ -3,16 +3,15 @@
 # @Email:  dbuehre@me.com
 # @Filename: Makefile
 # @Last modified by:   creaturesurvive
-# @Last modified time: 01-09-2017 1:19:30
+# @Last modified time: 08-09-2017 10:46:10
 # @Copyright: Copyright © 2014-2017 CreatureSurvive
 
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = libCSPreferencesHooks
 libCSPreferencesHooks_FILES = $(wildcard *.xm)
-# libCSPreferencesHooks_FILES = PSViewController.xm
 libCSPreferencesHooks_FRAMEWORKS = UIKit
-libCSPreferencesHooks_PRIVATE_FRAMEWORKS = Preferences
+libCSPreferencesHooks_PRIVATE_FRAMEWORKS = Preferences SafariServices
 libCSPreferencesHooks_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk

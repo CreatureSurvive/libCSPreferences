@@ -4,7 +4,7 @@
  * @Email:  dbuehre@me.com
  * @Filename: UIColor+ColorFromHex.h
  * @Last modified by:   creaturesurvive
- * @Last modified time: 03-09-2017 9:41:36
+ * @Last modified time: 12-09-2017 12:05:08
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
@@ -25,4 +25,10 @@
 
 //returns a UIColor from the passed hex string with alpha control eg [UIColor colorFromHexString:@"#6BB9F0 alpha:0.5f"];
 + (UIColor *)colorFromHexString:(NSString *)hexString alpha:(CGFloat)alpha;
+
++ (NSString *)hexStringFromColor:(UIColor *)color;
+
++ (NSString *)informationStringForColor:(UIColor *)color;
+
++ (BOOL)isColorLight:(UIColor *)color;
 @end

@@ -4,7 +4,7 @@
  * @Email:  dbuehre@me.com
  * @Filename: PSViewController.xm
  * @Last modified by:   creaturesurvive
- * @Last modified time: 02-09-2017 9:59:26
+ * @Last modified time: 10-09-2017 8:52:54
  * @Copyright: Copyright © 2014-2017 CreatureSurvive
  */
 
@@ -24,6 +24,7 @@
 @property (nonatomic, retain) NSBundle *bundle;
 @property (nonatomic, retain) UIColor *tintColor;
 - (void)setTintEnabled:(BOOL)enabled;
+- (void)setSegmentedSliderTrackColor:(UIColor *)color;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 @end
 
@@ -53,7 +54,6 @@
 %new
 - (void)setTintEnabled: (BOOL)enabled {
     NSBundle *bundle;
-
     if ([self.specifier propertyForKey:@"tintColor"]) {
         self.tintColor = [UIColor colorFromHexString:[self.specifier propertyForKey:@"tintColor"]];
     } else if ([[self parentController] respondsToSelector:@selector(bundle)]) {
@@ -80,7 +80,7 @@
         [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = self.tintColor;
         [UITextField appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].textColor = self.tintColor;
         [UISegmentedControl appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = self.tintColor;
-        // [self setSegmentedSliderTrackColor:tintColor];
+        [self setSegmentedSliderTrackColor:self.tintColor];
 
         // set the view tint
         self.view.tintColor = self.tintColor;
@@ -94,7 +94,7 @@
         [UITableView appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = nil;
         [UITextField appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].textColor = nil;
         [UISegmentedControl appearanceWhenContainedInInstancesOfClasses:@[[self.class class]]].tintColor = nil;
-        // [self setSegmentedSliderTrackColor:nil];
+        [self setSegmentedSliderTrackColor:nil];
 
     }
 }
