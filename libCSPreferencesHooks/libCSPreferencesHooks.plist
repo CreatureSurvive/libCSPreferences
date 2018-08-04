@@ -1,9 +1,0 @@
-{
-  Filter = {
-    Bundles = (
-      "com.apple.Preferences",
-      "com.apple.springboard"
-    );
-    Classes  = ( "UIFont" );
-  };
-}
