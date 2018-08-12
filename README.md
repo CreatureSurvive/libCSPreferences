@@ -1,25 +1,25 @@
 # libCSPreferences
 
-CSPreferences is a little library I started working on inorder to improve the workflow of working with preference bundles for PreferenceLoader
+CSPreferences is a little library I started working on inorder to improve the workflow of working with preference bundles for PreferenceLoader. For more information visit the [depiction](https://creaturesurvive.github.io/repo/packages/libcspreferences/depiction/), and for an up to date list of changes, visit the [changelog](https://creaturesurvive.github.io/repo/packages/libcspreferences/changelog/).
 
 ## Features
 
-- Not much yet, check back later
+- 3DTouch support
+- integrated color picker
+- powerful font picker with custom font support
+- theming support
+- change log controller
+- fully integrated backup/restore system
+- zero coding required to integrate in your project
+- crazy simple to use
 
 ## Installation
 
-1. Fork/Clone/Download this repository
-2. build using theos `make package`
-3. Configure from settings
-4. Profit
-
-
+currently available on Bigboss and https://creaturesurvive.github.io/
 
 ## Credits and Acknowledgments
 
 Created and Maintained by [CreatureSurvive](https://creaturecoding.com/) (Dana Buehre)
-
-
 
 ## License
 
@@ -30,15 +30,3 @@ Created and Maintained by [CreatureSurvive](https://creaturecoding.com/) (Dana B
 ## Submit Bugs & or Fixes:
 
 https://github.com/CreatureSurvive/CSPreferences/issues  
-
-## Lines of Code:
-
-| Langueage         | files | blank | comment | code |
-| ----------------- | ----- | ----- | ------- | ---- |
-| **Objective C**   | 12    | 333   | 202     | 1209 |
-| **HTML**          | 1     | 30    | 0       | 490  |
-| **C/C++ Header**  | 14    | 48    | 98      | 108  |
-| **Markdown**      | 3     | 20    | 0       | 44   |
-| **make**          | 2     | 11    | 8       | 30   |
-| **Objective C++** | 1     | 0     | 0       | 1    |
-| **SUM:**          | 33    | 442   | 308     | 1882 |
