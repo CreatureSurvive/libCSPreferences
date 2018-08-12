@@ -17,6 +17,10 @@ CSPreferences is a little library I started working on inorder to improve the wo
 
 currently available on Bigboss and https://creaturesurvive.github.io/
 
+## Usage
+
+For usage information, check out the [wiki](https://github.com/CreatureSurvive/libCSPreferences/wiki).
+
 ## Credits and Acknowledgments
 
 Created and Maintained by [CreatureSurvive](https://creaturecoding.com/) (Dana Buehre)
