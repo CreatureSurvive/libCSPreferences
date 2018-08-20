@@ -8,6 +8,16 @@
 #import <Preferences/PSListItemsController.h>
 
 @interface CSPListController : PSListController
+
+// Convenience
+// Fetching Values
+- (id)          objectForKey:   (NSString *)key;
+- (NSString *)  stringForKey:   (NSString *)key;
+- (BOOL)        boolForKey:     (NSString *)key;
+- (float)       floatForKey:    (NSString *)key;
+- (double)      doubleForKey:   (NSString *)key;
+- (int)         intForKey:      (NSString *)key;
+- (UIColor *)   colorForKey:    (NSString *)key;
 @end
 
 @interface CSPDeveloperCell : PSTableCell
