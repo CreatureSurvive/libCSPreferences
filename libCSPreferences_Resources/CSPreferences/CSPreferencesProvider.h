@@ -12,8 +12,8 @@
 #import "UIColor+CSPreferences.h"
 
 @interface CSPreferencesProvider : NSObject
-@property (nonatomic, copy) NSDictionary *defaults;
-@property (nonatomic, retain) NSString *plistPath;
+@property (nonatomic, copy)     NSDictionary    *defaults;
+@property (nonatomic, retain)   NSString        *plistPath;
 
 // initialization
 - (id)   initWithTweakID:(NSString *)identifier
@@ -26,19 +26,19 @@
         postNotification:(NSString *)notification
     notificationCallback:(void (^)(CSPreferencesProvider *))callback;
 
-// Convienience
+// Convenience
 // Fetching Values
-- (id)objectForKey:(NSString *)key;
-- (NSString *)stringForKey:(NSString *)key;
-- (BOOL)boolForKey:(NSString *)key;
-- (float)floatForKey:(NSString *)key;
-- (double)doubleForKey:(NSString *)key;
-- (int)intForKey:(NSString *)key;
-- (UIColor *)colorForKey:(NSString *)key;
+- (id)          objectForKey:   (NSString *)key;
+- (NSString *)  stringForKey:   (NSString *)key;
+- (BOOL)        boolForKey:     (NSString *)key;
+- (float)       floatForKey:    (NSString *)key;
+- (double)      doubleForKey:   (NSString *)key;
+- (int)         intForKey:      (NSString *)key;
+- (UIColor *)   colorForKey:    (NSString *)key;
 
 // Setting Values
-- (void)setObject:(id)obj forKey:(NSString *)key;
-- (void)removeObjectForKey:(NSString *)key;
+- (void)setObject:              (id)obj         forKey:(NSString *)key;
+- (void)removeObjectForKey:     (NSString *)key;
 
 // Saving Values
 - (void)save;
@@ -46,7 +46,7 @@
 - (void)postNotification;
 
 // Custom Controller
-- (id)readPreferenceValue:(id)specifier;
-- (void)setPreferenceValue:(id)value specifier:(id)specifier;
+- (id)readPreferenceValue:      (id)specifier;
+- (void)setPreferenceValue:     (id)value       specifier:(id)specifier;
 
 @end
