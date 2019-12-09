@@ -33,6 +33,12 @@
 // returns true if the string is a valid hex (will pass with or without #)
 + (BOOL)csp_isValidHexString:(NSString *)hexStr;
 
+// returns an array of UIColors from a comma seporated string of hex colors
++ (NSArray<UIColor *> *)csp_gradientStringColors:(NSString *)colorsString;
+
+// returns an array of CGColors from a comma seporated string of hex colors
++ (NSArray<id> *)csp_gradientStringCGColors:(NSString *)colorsString;
+
 // the alpha component the color instance
 - (CGFloat)csp_alpha;
 
